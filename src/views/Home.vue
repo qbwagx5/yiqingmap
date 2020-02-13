@@ -115,14 +115,11 @@ export default {
 
 <style lang="scss">
 .home {
-  // text-align: center;
   width: 764px;
-  position: relative;
+  margin: 0 auto;
   header {
-    position: relative;
     height: 187px;
-    left: 50%;
-    transform: translate(-5%, 0%);
+    margin: 0 auto;
     background: url(../assets/222.png) no-repeat;
     background-size: 695px 189px;
     background-position: 50% 50%;
@@ -149,12 +146,7 @@ export default {
     }
   }
   nav {
-    //  position: absolute;
     background-color: #fff;
-    position: relative;
-    left: 50%;
-    transform: translate(-5%, 0%);
-
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     .navigation {
@@ -174,9 +166,6 @@ export default {
   main {
     width: 764px;
     background-color: #fff;
-    position: relative;
-    left: 50%;
-    transform: translate(-5%, 0%);
   }
   .statistics {
     width: 100%;

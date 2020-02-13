@@ -26,6 +26,7 @@ export default {
   // text-align: center;
   color: #2c3e50;
   width: 100%;
+  height: auto;
   background-color: #10aeb5;
   // height: 
 }
