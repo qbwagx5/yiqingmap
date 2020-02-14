@@ -35,22 +35,31 @@
             <div class="statistics-suspect">
               <p style="font-size:22px;font-weight:bold; color:#ec9217">{{suspect}}</p>
               <p>疑似病例</p>
-              <p class="statistics-yesterday" >昨日<span style="color:#ec9217">+{{suspectIncr}}</span></p>
+              <p class="statistics-yesterday">
+                昨日
+                <span style="color:#ec9217">+{{suspectIncr}}</span>
+              </p>
             </div>
             <div class="statistics-cure d">
               <p style="font-size:22px;font-weight:bold; color:#10aeb5">{{cured}}</p>
               <p>治愈病例</p>
-              <p class="statistics-yesterday">昨日<span style="color:#10aeb5">+{{curedIncr}}</span></p>
+              <p class="statistics-yesterday">
+                昨日
+                <span style="color:#10aeb5">+{{curedIncr}}</span>
+              </p>
             </div>
             <div class="statistics-death">
               <p style="font-size:22px;font-weight:bold; color:#4d5054; ">{{death}}</p>
               <p>死亡病例</p>
-              <p class="statistics-yesterday">昨日<span style="color:#4d5054">+{{deathIncr}}</span></p>
+              <p class="statistics-yesterday">
+                昨日
+                <span style="color:#4d5054">+{{deathIncr}}</span>
+              </p>
             </div>
           </div>
         </div>
         <chinamap @getsondata="getdata"></chinamap>
-        <province></province>
+        <province ></province>
       </div>
     </main>
   </div>

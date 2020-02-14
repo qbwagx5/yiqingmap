@@ -61,7 +61,7 @@ export default {
 
     setInterval(() => {
       this.getdata()
-    }, 300000);
+    }, 60000);
     this.myChart = this.$echarts.init(document.getElementById("main"));
     // 指定图表的配置项和数据
     let option = {
