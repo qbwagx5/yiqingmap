@@ -13,10 +13,12 @@
         <template v-for=" item in citylist" class="arealist">
           <tr>
             <td class="areanames">
-              <div>
+              <div @click="click(item)">
+                <!-- <img src="../assets/image/down.png" alt=""> -->
+                <span :class="[item.flag == false ? 'downarrow':'uparrow']"></span>
                 <span>{{item.provinceName}}</span>
 
-                <button style="float:right" @click="click(item)">点击</button>
+                <!-- <button style="float:right" >点击</button> -->
               </div>
             </td>
             <td>
@@ -35,9 +37,9 @@
               </div>
             </td>
           </tr>
-          <tr v-show="item.flag === true">
-            <td colspan="4"> 
-              <table class="city"> 
+          <tr v-if="item.flag === true">
+            <td colspan="4">
+              <table class="city">
                 <tbody>
                   <tr v-for="i in item.cities" class="citylist">
                     <td class="cityname">
@@ -46,17 +48,17 @@
                       </div>
                     </td>
                     <td class="cityother">
-                      <div >
+                      <div>
                         <span>{{i.confirmedCount}}</span>
                       </div>
                     </td>
                     <td class="cityother">
-                      <div >
+                      <div>
                         <span>{{i.curedCount}}</span>
                       </div>
                     </td>
                     <td class="cityother">
-                      <div >
+                      <div>
                         <span>{{i.deadCount}}</span>
                       </div>
                     </td>
@@ -75,11 +77,14 @@
 export default {
   data() {
     return {
-      citylist:[]
+      citylist: []
     };
   },
   mounted() {
-     this.getdatas();
+    this.getdatas();
+    setInterval(() => {
+      this.update();
+    }, 60000);
   },
   methods: {
     click(item) {
@@ -87,7 +92,7 @@ export default {
       this.$forceUpdate();
     },
     getdatas() {
-     let url = "https://tianqiapi.com/api";
+      let url = "https://tianqiapi.com/api";
       this.$axios
         .get(url, {
           params: {
@@ -98,15 +103,31 @@ export default {
           }
         })
         .then(data => {
-
-          this.citylist=data.data.data.area;
+          this.citylist = data.data.data.area;
           this.citylist.forEach(i => {
-            i.flag=false;
+            i.flag = false;
           });
-
-          
-          
+        });
+    },
+    update() {
+      let url = "https://tianqiapi.com/api";
+      this.$axios
+        .get(url, {
+          params: {
+            version: "epidemic",
+            appid: 91527574,
+            appsecret: "wViEa3zM",
+            vue: 1
+          }
         })
+        .then(data => {
+          let citylists = [];
+          citylists = data.data.data.area;
+          for (let i = 0; i < citylists.length; i++) {
+            citylists[i].flag = this.citylist[i].flag;
+          }
+          this.citylist = citylists;
+        });
     }
   }
 };
@@ -134,6 +155,28 @@ export default {
       border-bottom-left-radius: 5px;
       margin-bottom: 10px;
       line-height: 30px;
+      .downarrow{
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-image: url(../assets/image/down.png);
+        margin-left: 10px;
+        margin-right: 5px;
+        vertical-align: middle;
+      }
+      .uparrow{
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-image: url(../assets/image/up.png);
+        margin-left: 10px;
+        margin-right: 5px;
+        vertical-align: middle;
+      }
     }
     tr {
       width: 100%;
@@ -151,10 +194,11 @@ export default {
     }
     .areadefined {
       background-color: #f5f6f7;
-      color: #555555;
+      color: #4d5054;
       height: 30px;
       line-height: 30px;
       margin-bottom: 10px;
+      font-weight: 700;
     }
     .death {
       width: 23.3%;
