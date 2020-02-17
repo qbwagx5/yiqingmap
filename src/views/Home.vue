@@ -60,6 +60,7 @@
         </div>
         <chinamap @getsondata="getdata"></chinamap>
         <province ></province>
+        <news></news>
       </div>
     </main>
   </div>
@@ -68,11 +69,13 @@
 // @ is an alias to /src
 import chinamap from "../components/china.vue";
 import province from "../components/province.vue";
+import news from "../components/news.vue";
+
 
 
 export default {
   name: "Home",
-  components: { chinamap,province },
+  components: { chinamap,province,news },
   data() {
     return {
       navigationTitle: 1,

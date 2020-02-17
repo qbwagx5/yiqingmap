@@ -13,7 +13,7 @@
         <template v-for=" item in citylist" class="arealist">
           <tr>
             <td class="areanames">
-              <div @click="click(item)">
+              <div @click="click(item)">  
                 <!-- <img src="../assets/image/down.png" alt=""> -->
                 <span :class="[item.flag == false ? 'downarrow':'uparrow']"></span>
                 <span>{{item.provinceName}}</span>
@@ -84,7 +84,7 @@ export default {
     this.getdatas();
     setInterval(() => {
       this.update();
-    }, 60000);
+    }, 600000);
   },
   methods: {
     click(item) {

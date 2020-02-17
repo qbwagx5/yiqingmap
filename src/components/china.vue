@@ -1,11 +1,14 @@
 <template>
-  <div id="main" style="width: 764px;height:600px;"></div>
+  <div>
+    <div id="main" style="width: 764px;height:600px;margin-bottom:20px;"></div>
+    <div id="Nationdefied"></div>
+  </div>
 </template>
 
 <script>
 // require("echarts/map/js/china");
 // import china from 'echarts/map/js/china'
- import '../../node_modules/echarts/map/js/china.js' 
+import "../../node_modules/echarts/map/js/china.js";
 //   import '../../node_modules/echarts/map/js/.js'
 
 export default {
@@ -14,7 +17,8 @@ export default {
     return {
       provincedata: [],
       newprovincedata: [],
-      myChart: null
+      myChart: null,
+      NationdefiedChart: null
     };
   },
   methods: {
@@ -24,16 +28,13 @@ export default {
         .get(url, {
           params: {
             version: "epidemic",
-            appid: 11848684,
-            appsecret: "9LqwcVlJ",
+            appid: 97825219,
+            appsecret: "KJl6nIrK",
             vue: 1
           }
         })
         .then(data => {
-          // console.log(data.data.data);
           this.provincedata = data.data.data.area;
-          // console.log(this.provincedata);
-          
           let that = this;
           this.provincedata.forEach(i => {
             let obj = {};
@@ -41,8 +42,20 @@ export default {
             obj.value = i.confirmedCount;
             that.newprovincedata.push(obj);
           });
-          this.$emit('getsondata', data.data.data);
-
+          let historylist = data.data.data.history;
+          let newdate = [],
+            historydefinedarr = [],
+            historysuspectedarr = [];
+          for (let i = 0; i < historylist.length - 1; i++) {
+            let datearr = historylist[i].date.split("-");
+            let date = `${datearr[1]}.${datearr[2]}`;
+            newdate.unshift(date);
+            historydefinedarr.unshift(
+              historylist[i].confirmedNum - historylist[i + 1].confirmedNum
+            );
+            historysuspectedarr.unshift(historylist[i].suspectedIncr);
+          }
+          this.$emit("getsondata", data.data.data);
           that.myChart.setOption({
             series: [
               {
@@ -50,7 +63,43 @@ export default {
               }
             ]
           });
-          that.newprovincedata=[];
+          that.newprovincedata = [];
+          that.NationdefiedChart.setOption({
+            xAxis: [
+              {
+                data: newdate
+              }
+            ],
+            series: [
+              {
+                type: "line",
+                smooth: true,
+                data: historydefinedarr,
+                itemStyle: {
+                  normal: {
+                    color: "#ed6864", //折线点的颜色
+                    lineStyle: {
+                      color: "#ed6864" //折线的颜色
+                    }
+                  }
+                }
+              },
+              {
+                type: "line",
+                smooth: true,
+                itemStyle: {
+                  // ed6864
+                  normal: {
+                    color: "#f2a340", //折线点的颜色
+                    lineStyle: {
+                      color: "#f2a340" //折线的颜色
+                    }
+                  }
+                },
+                data: historysuspectedarr
+              }
+            ]
+          });
         });
     }
   },
@@ -58,10 +107,9 @@ export default {
     this.getdata();
   },
   mounted() {
-
     setInterval(() => {
-      this.getdata()
-    }, 60000);
+      this.getdata();
+    }, 600000);
     this.myChart = this.$echarts.init(document.getElementById("main"));
     // 指定图表的配置项和数据
     let option = {
@@ -136,10 +184,78 @@ export default {
     };
     // 使用刚指定的配置项和数据显示图表。
     this.myChart.setOption(option);
+
+    this.NationdefiedChart = this.$echarts.init(
+      document.getElementById("Nationdefied")
+    );
+    let NationdefiedChartoption = {
+      grid: {
+        top: 70,
+        bottom: 50,
+      },
+      tooltip: {
+        show: true,
+        trigger: "axis",
+        formatter: function(params) {
+          let definedres=params[0].value,
+              suspected=params[1].value;
+              // console.log(params);
+              
+          let res=params[0].name+'<br>'+params[0].marker+'新增确诊:'+  definedres+'<br>'+params[1].marker+"新增疑似:"+suspected
+          return res;
+        }
+      },
+      title: {
+        text: "全国 新增确诊/疑似 趋势",
+        left: 30,
+        textStyle: {
+          color: "#555555",
+          fontSize: "15"
+        }
+      },
+      xAxis: {
+        type: "category",
+        axisLabel: {
+          interval:1,
+          rotate:-40,  
+          textStyle: {
+            color: "color: rgba(204, 204, 204, 0.077)" //坐标的字体颜色
+          }
+        },
+        axisLine: {
+          show: false
+        },
+        axisTick: {
+          show: false
+        },
+        data: []
+      },
+      yAxis: {
+        axisLine: {
+          show: false
+        },
+        axisTick: {
+          show: false
+        },
+        type: "value"
+      },
+      legend: {
+        data: ["新增确诊"]
+      }
+    };
+    this.NationdefiedChart.setOption(NationdefiedChartoption);
   }
 };
 </script>
 
 
 <style scoped lang="scss">
+#Nationdefied {
+  width: 729px;
+  height: 570px;
+  margin-left: 15px;
+  border: 1px solid #eee;
+  padding-top: 20px;
+  border-radius: 5px;
+}
 </style>
