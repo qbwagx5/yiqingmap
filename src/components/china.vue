@@ -6,10 +6,7 @@
 </template>
 
 <script>
-// require("echarts/map/js/china");
-// import china from 'echarts/map/js/china'
 import "../../node_modules/echarts/map/js/china.js";
-//   import '../../node_modules/echarts/map/js/.js'
 
 export default {
   name: "chinamap",
@@ -23,93 +20,86 @@ export default {
   },
   methods: {
     getdata() {
-      let url = "https://tianqiapi.com/api";
-      this.$axios
-        .get(url, {
-          params: {
-            version: "epidemic",
-            appid: 97825219,
-            appsecret: "KJl6nIrK",
-            vue: 1
-          }
-        })
-        .then(data => {
-          this.provincedata = data.data.data.area;
-          let that = this;
-          this.provincedata.forEach(i => {
-            let obj = {};
-            obj.name = i.provinceName;
-            obj.value = i.confirmedCount;
-            that.newprovincedata.push(obj);
-          });
-          let historylist = data.data.data.history;
-          let newdate = [],
-            historydefinedarr = [],
-            historysuspectedarr = [];
-          for (let i = 0; i < historylist.length - 1; i++) {
-            let datearr = historylist[i].date.split("-");
-            let date = `${datearr[1]}.${datearr[2]}`;
-            newdate.unshift(date);
-            historydefinedarr.unshift(
-              historylist[i].confirmedNum - historylist[i + 1].confirmedNum
-            );
-            historysuspectedarr.unshift(historylist[i].suspectedIncr);
-          }
-          this.$emit("getsondata", data.data.data);
-          that.myChart.setOption({
-            series: [
-              {
-                data: this.newprovincedata
+      this.provincedata = this.$store.state.epidemicdata.list;
+      let that = this;
+      setTimeout(() => {
+        that.provincedata = that.$store.state.epidemicdata.list;
+        let historylist = that.$store.state.epidemicdata.historylist;
+        let newdate = [],
+          historydefinedarr = [],
+          historysuspectedarr = [];
+
+        for (let i = 0; i < historylist.length - 1; i++) {
+          historydefinedarr.unshift(
+            historylist[i].cn_conNum - historylist[i + 1].cn_conNum
+          );
+          historysuspectedarr.unshift(historylist[i].wjw_susNum);
+          newdate.unshift(historylist[i].date);
+        }
+        let historydefinedarrs = historydefinedarr.slice(-25);
+        let historysuspectedarrs = historysuspectedarr.slice(-25);
+        let newdates = newdate.slice(-25);
+
+        that.NationdefiedChart.setOption({
+          xAxis: [
+            {
+              data: newdates
+            }
+          ],
+          series: [
+            {
+              type: "line",
+              smooth: true,
+              data: historydefinedarrs,
+              itemStyle: {
+                normal: {
+                  color: "#ed6864", //折线点的颜色
+                  lineStyle: {
+                    color: "#ed6864" //折线的颜色
+                  }
+                }
               }
-            ]
-          });
-          that.newprovincedata = [];
-          that.NationdefiedChart.setOption({
-            xAxis: [
-              {
-                data: newdate
-              }
-            ],
-            series: [
-              {
-                type: "line",
-                smooth: true,
-                data: historydefinedarr,
-                itemStyle: {
-                  normal: {
-                    color: "#ed6864", //折线点的颜色
-                    lineStyle: {
-                      color: "#ed6864" //折线的颜色
-                    }
+            },
+            {
+              type: "line",
+              smooth: true,
+              itemStyle: {
+                // ed6864
+                normal: {
+                  color: "#f2a340", //折线点的颜色
+                  lineStyle: {
+                    color: "#f2a340" //折线的颜色
                   }
                 }
               },
-              {
-                type: "line",
-                smooth: true,
-                itemStyle: {
-                  // ed6864
-                  normal: {
-                    color: "#f2a340", //折线点的颜色
-                    lineStyle: {
-                      color: "#f2a340" //折线的颜色
-                    }
-                  }
-                },
-                data: historysuspectedarr
-              }
-            ]
-          });
+              data: historysuspectedarrs
+            }
+          ]
         });
+
+        that.provincedata.forEach(i => {
+          let obj = {};
+          obj.name = i.name;
+          obj.value = i.value;
+          that.newprovincedata.push(obj);
+        });
+        that.myChart.setOption({
+          series: [
+            {
+              data: this.newprovincedata
+            }
+          ]
+        });
+        that.newprovincedata = [];
+      }, 500);
     }
   },
-  created() {
-    this.getdata();
-  },
+
   mounted() {
+    this.getdata();
     setInterval(() => {
       this.getdata();
-    }, 600000);
+    }, 60000);
     this.myChart = this.$echarts.init(document.getElementById("main"));
     // 指定图表的配置项和数据
     let option = {
@@ -191,17 +181,26 @@ export default {
     let NationdefiedChartoption = {
       grid: {
         top: 70,
-        bottom: 50,
+        bottom: 50
       },
       tooltip: {
         show: true,
         trigger: "axis",
         formatter: function(params) {
-          let definedres=params[0].value,
-              suspected=params[1].value;
-              // console.log(params);
-              
-          let res=params[0].name+'<br>'+params[0].marker+'新增确诊:'+  definedres+'<br>'+params[1].marker+"新增疑似:"+suspected
+          let definedres = params[0].value,
+            suspected = params[1].value;
+          // console.log(params);
+
+          let res =
+            params[0].name +
+            "<br>" +
+            params[0].marker +
+            "新增确诊:" +
+            definedres +
+            "<br>" +
+            params[1].marker +
+            "新增疑似:" +
+            suspected;
           return res;
         }
       },
@@ -216,8 +215,8 @@ export default {
       xAxis: {
         type: "category",
         axisLabel: {
-          interval:1,
-          rotate:-40,  
+          interval: 1,
+          rotate: -40,
           textStyle: {
             color: "color: rgba(204, 204, 204, 0.077)" //坐标的字体颜色
           }

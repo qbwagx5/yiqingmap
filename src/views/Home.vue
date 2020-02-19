@@ -21,7 +21,7 @@
         <div class="statistics">
           <div class="statistics-title">
             <p class="areaname" @click="go">{{areaname}}</p>
-            <p class="date">更新至&nbsp;{{date}}</p>
+            <p class="date">&nbsp;{{date}}数据统计</p>
           </div>
           <div class="statistics-main">
             <div class="statistics-diagnosed">
@@ -58,8 +58,8 @@
             </div>
           </div>
         </div>
-        <chinamap @getsondata="getdata"></chinamap>
-        <province ></province>
+        <chinamap></chinamap>
+        <province></province>
         <news></news>
       </div>
     </main>
@@ -70,12 +70,12 @@
 import chinamap from "../components/china.vue";
 import province from "../components/province.vue";
 import news from "../components/news.vue";
-
+import $ from 'jquery'
 
 
 export default {
   name: "Home",
-  components: { chinamap,province,news },
+  components: { chinamap, province, news },
   data() {
     return {
       navigationTitle: 1,
@@ -92,27 +92,45 @@ export default {
       deathIncr: 0 //新增死亡人数
     };
   },
+
+  created() {
+    this.getdatas()
+  },
+
+  mounted() {
+    setInterval(() => {
+      this.getdatas()
+    }, 60000);
+  },
   methods: {
-    go(){
-      this.$router.push({ name: 'About' })
+    go() {
+      this.$router.push({ name: "About" });
+    },
+    getdatas() {
+      let url = "https://interface.sina.cn/news/wap/fymap2020_data.d.json";
+      let that=this;
+      $.ajax({
+        type: "get",
+        url: url,
+        dataType: "jsonp",
+        success: function(data) {
+          let epidemicdata=data.data;
+          that.$store.dispatch('updatedfun',epidemicdata);
+          that.getdata(epidemicdata);
+        }
+      });
     },
     getdata(data) {
       this.statisticsdata = data;
-      this.diagnosed = data.diagnosed;
-      this.suspect = data.suspect;
-      this.cured = data.cured;
-      this.death = data.death;
-      this.date = data.date;
-      let that = this;
-      if (data.history) {
-        that.diagnosedIncr =
-          data.history[0].confirmedNum - data.history[1].confirmedNum;
-      } else {
-        that.diagnosedIncr = data.diagnosedIncr;
-      }
-      this.suspectIncr = data.suspectIncr;
-      this.curedIncr = data.curedIncr;
-      this.deathIncr = data.deathIncr;
+      this.diagnosed = data.gntotal;
+      this.suspect = data.sustotal;
+      this.cured = data.curetotal;
+      this.death = data.deathtotal;
+      this.date = data.times;
+      this.diagnosedIncr = data.add_daily.addcon;
+      this.suspectIncr = data.add_daily.wjw_addsus;
+      this.curedIncr = data.add_daily.addcure;
+      this.deathIncr = data.add_daily.adddeath;
     },
     addclass(name) {
       if (name == "dynamic") {

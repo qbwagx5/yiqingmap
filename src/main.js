@@ -9,6 +9,9 @@ Vue.prototype.$echarts = echarts;
 import axios from 'axios';
 Vue.prototype.$axios = axios;
 
+
+
+
 new Vue({
   router,
   store,

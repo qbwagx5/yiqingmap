@@ -13,53 +13,51 @@
         <template v-for=" item in citylist" class="arealist">
           <tr>
             <td class="areanames">
-              <div @click="click(item)">  
-                <!-- <img src="../assets/image/down.png" alt=""> -->
-                <span :class="[item.flag == false ? 'downarrow':'uparrow']"></span>
-                <span>{{item.provinceName}}</span>
-
-                <!-- <button style="float:right" >点击</button> -->
+              <div @click="click(item)">
+                <span :class="[item.flag == false ? 'downarrow':'uparrow']" v-if="item.city.length>0"></span>
+                <span class="nonearrow" v-show="item.city.length==0"></span>
+                <span class="proname">{{item.name}}</span>
               </div>
             </td>
             <td>
               <div class="areadefined">
-                <span>{{item.confirmedCount}}</span>
+                <span>{{item.value}}</span>
               </div>
             </td>
             <td>
               <div class="areadefined">
-                <span>{{item.curedCount}}</span>
+                <span>{{item.cureNum}}</span>
               </div>
             </td>
             <td>
               <div class="areadefined">
-                <span>{{item.deadCount}}</span>
+                <span>{{item.deathNum}}</span>
               </div>
             </td>
           </tr>
-          <tr v-if="item.flag === true">
+          <tr v-if="item.flag === true && item.city.length>0">
             <td colspan="4">
               <table class="city">
                 <tbody>
-                  <tr v-for="i in item.cities" class="citylist">
+                  <tr v-for="i in item.city" class="citylist">
                     <td class="cityname">
                       <div class="citydefined">
-                        <span>{{i.cityName}}</span>
+                        <span>{{i.name}}</span>
                       </div>
                     </td>
                     <td class="cityother">
                       <div>
-                        <span>{{i.confirmedCount}}</span>
+                        <span>{{i.conNum}}</span>
                       </div>
                     </td>
                     <td class="cityother">
                       <div>
-                        <span>{{i.curedCount}}</span>
+                        <span>{{i.cureNum}}</span>
                       </div>
                     </td>
                     <td class="cityother">
                       <div>
-                        <span>{{i.deadCount}}</span>
+                        <span>{{i.deathNum}}</span>
                       </div>
                     </td>
                   </tr>
@@ -84,50 +82,39 @@ export default {
     this.getdatas();
     setInterval(() => {
       this.update();
-    }, 600000);
+    }, 60000);
   },
   methods: {
     click(item) {
-      item.flag = !item.flag;
-      this.$forceUpdate();
+      if(item.city.length == 0){
+        return false;
+      }
+      else{
+        item.flag = !item.flag;
+        this.$forceUpdate();
+      }
+
     },
     getdatas() {
-      let url = "https://tianqiapi.com/api";
-      this.$axios
-        .get(url, {
-          params: {
-            version: "epidemic",
-            appid: 91527574,
-            appsecret: "wViEa3zM",
-            vue: 1
-          }
-        })
-        .then(data => {
-          this.citylist = data.data.data.area;
-          this.citylist.forEach(i => {
-            i.flag = false;
-          });
+      setTimeout(() => {
+        this.citylist = this.$store.state.epidemicdata.list;
+        this.citylist.forEach(i => {
+          i.flag = false;
         });
+        this.citylist.sort(function(a, b) {
+          return Number(b.value) - Number(a.value);
+        });
+        for (let i = 0; i < this.citylist.length; i++) {
+          this.citylist[i].city.sort(function(a, b) {
+            return Number(b.conNum) - Number(a.conNum);
+          });
+        }
+        this.citylist[0].flag = true;
+        this.$store.dispatch('updatedcityfun',this.citylist);
+      }, 500);
     },
     update() {
-      let url = "https://tianqiapi.com/api";
-      this.$axios
-        .get(url, {
-          params: {
-            version: "epidemic",
-            appid: 91527574,
-            appsecret: "wViEa3zM",
-            vue: 1
-          }
-        })
-        .then(data => {
-          let citylists = [];
-          citylists = data.data.data.area;
-          for (let i = 0; i < citylists.length; i++) {
-            citylists[i].flag = this.citylist[i].flag;
-          }
-          this.citylist = citylists;
-        });
+      this.citylist = this.$store.state.citylist;
     }
   }
 };
@@ -155,7 +142,13 @@ export default {
       border-bottom-left-radius: 5px;
       margin-bottom: 10px;
       line-height: 30px;
-      .downarrow{
+      .nonearrow{
+        // position: relative;
+        width: 27px;
+        display: inline-block;
+        // padding-left:27px; 
+      }
+      .downarrow {
         display: inline-block;
         width: 14px;
         height: 14px;
@@ -166,7 +159,7 @@ export default {
         margin-right: 5px;
         vertical-align: middle;
       }
-      .uparrow{
+      .uparrow {
         display: inline-block;
         width: 14px;
         height: 14px;
