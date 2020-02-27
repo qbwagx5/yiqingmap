@@ -5,19 +5,22 @@
     <div class="epidemicnewstitle">
       <p class="title">疫情动态</p>
     </div>
-    <div class="epidemicnewsmian">
-      <div class="point">
-        <span class="fatherpoint">
-          <span class="Coverpoint"></span>
-
-          <span class="sonpoint"></span>
-        </span>
-      </div>
-      <div class="point">
-        <span class="fatherpoint">
-          <span class="Coverpoint"></span>
-          <span class="sonpoint"></span>
-        </span>
+    <div class="epidemicnewsmain">
+      <div v-for="item in newlists" v-bind:key="item.newsId">
+        <div class="point">
+          <span class="fatherpoint">
+            <span class="Coverpoint"></span>
+            <span class="sonpoint"></span>
+          </span>
+        </div>
+        <div class="news-body">
+          <div class="title">
+            <span>{{item.date}}</span>
+          </div>
+          <div class="news-main">
+            <p>{{item.title}}</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -28,19 +31,19 @@ import $ from "jquery";
 export default {
   data() {
     return {
-      newlist: []
+      newlists: []
     };
   },
   methods: {
     getnewsdata() {
       var timestamp = Date.parse(new Date());
-      console.log(timestamp);
       let data = {
         component_id:
           "_conf_13|wap_zt_std_theme_timeline|http://news.sina.cn/zt_d/yiqing0121",
         page: 1,
         _: timestamp
       };
+      let that = this;
       $.ajax({
         type: "get",
         dataType: "jsonp",
@@ -48,7 +51,7 @@ export default {
           "https://interface.sina.cn/wap_api/wap_std_subject_feed_list.d.json",
         data: data,
         success: function(data) {
-          console.log(data);
+          that.newlists = data.result.data.data;
         }
       });
     }
@@ -63,7 +66,8 @@ export default {
 .news {
   margin-top: 20px;
   margin-left: 20px;
-  height: 400px;
+  display: grid;
+
   .epidemicnewstitle {
     .title {
       font-size: 18px;
@@ -73,12 +77,45 @@ export default {
       margin-bottom: 10px;
     }
   }
-  .epidemicnewsmian {
+  .epidemicnewsmain {
+    position: relative;
+    top: 10px;
+    .news-body {
+      position: relative;
+      // display: inline-block;
+      float: left;
+      width: 98%;
+      height: 85px;
+      .title {
+        position: absolute;
+        left: 15px;
+        top: -4px;
+        font-size: 14px;
+        color: #999999;
+      }
+      .news-main {
+        position: absolute;
+        width: 95%;
+        height: 50px;
+        top: 20px;
+        left: 15px;
+        background-color: #f5f6f7;
+        border-radius: 5px;
+        p {
+          padding-left: 20px;
+          line-height: 50px;
+          color: #4d5054;
+          font-size: 16px;
+          font-weight: 600;
+        }
+      }
+    }
     .point {
       position: relative;
-      width: 100%;
-      height: 100px;
-      .Coverpoint{
+      width: 10px;
+      height: 85px;
+      float: left;
+      .Coverpoint {
         background-color: #fff;
         display: block;
         position: absolute;
@@ -86,15 +123,13 @@ export default {
         height: 11px;
         border: 1px solid #ffffff;
         border-radius: 50%;
-        left:-6px;
+        left: -6px;
         top: 0px;
-        
-
       }
       .fatherpoint {
         width: 1px;
         display: block;
-        height: 100px;
+        height: 80px;
         background: #eee;
         position: absolute;
         left: 10px;

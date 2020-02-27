@@ -61,7 +61,9 @@
         <chinamap></chinamap>
         <province></province>
         <news></news>
+
       </div>
+
     </main>
   </div>
 </template>
@@ -106,7 +108,7 @@ export default {
     go() {
       this.$router.push({ name: "About" });
     },
-    getdatas() {
+    getdatas() {      
       let url = "https://interface.sina.cn/news/wap/fymap2020_data.d.json";
       let that=this;
       $.ajax({
@@ -128,7 +130,7 @@ export default {
       this.death = data.deathtotal;
       this.date = data.times;
       this.diagnosedIncr = data.add_daily.addcon;
-      this.suspectIncr = data.add_daily.wjw_addsus;
+      this.suspectIncr = data.add_daily.addsus;
       this.curedIncr = data.add_daily.addcure;
       this.deathIncr = data.add_daily.adddeath;
     },

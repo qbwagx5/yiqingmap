@@ -4,6 +4,7 @@
       <thead>
         <tr>
           <th class="area">地区</th>
+          <th class="adddefined">新增确诊</th>
           <th class="defined">确诊</th>
           <th class="cure">治愈</th>
           <th class="death">死亡</th>
@@ -17,6 +18,11 @@
                 <span :class="[item.flag == false ? 'downarrow':'uparrow']" v-if="item.city.length>0"></span>
                 <span class="nonearrow" v-show="item.city.length==0"></span>
                 <span class="proname">{{item.name}}</span>
+              </div>
+            </td>
+            <td>
+              <div class="areadefined">
+                <span>{{item.adddaily.conadd}}</span>
               </div>
             </td>
             <td>
@@ -36,13 +42,18 @@
             </td>
           </tr>
           <tr v-if="item.flag === true && item.city.length>0">
-            <td colspan="4">
+            <td colspan="5">
               <table class="city">
                 <tbody>
                   <tr v-for="i in item.city" class="citylist">
                     <td class="cityname">
                       <div class="citydefined">
                         <span>{{i.name}}</span>
+                      </div>
+                    </td>
+                    <td class="cityother">
+                      <div>
+                        <span>{{i.conadd}}</span>
                       </div>
                     </td>
                     <td class="cityother">
@@ -75,14 +86,19 @@
 export default {
   data() {
     return {
-      citylist: []
+      citylist: [],
+      // epidemicdata:{}
+      waitlist:null
     };
   },
   mounted() {
-    this.getdatas();
+      this.citylist = this.$store.state.epidemicdata.list;
+      setTimeout(() => {
+        this.getdatas()
+      }, 4000);
     setInterval(() => {
-      this.update();
-    }, 60000);
+      this.updates();
+    }, 6000);
   },
   methods: {
     click(item) {
@@ -93,10 +109,8 @@ export default {
         item.flag = !item.flag;
         this.$forceUpdate();
       }
-
     },
     getdatas() {
-      setTimeout(() => {
         this.citylist = this.$store.state.epidemicdata.list;
         this.citylist.forEach(i => {
           i.flag = false;
@@ -109,14 +123,13 @@ export default {
             return Number(b.conNum) - Number(a.conNum);
           });
         }
-        this.citylist[0].flag = true;
         this.$store.dispatch('updatedcityfun',this.citylist);
-      }, 500);
-    },
-    update() {
+      },
+    updates() {
       this.citylist = this.$store.state.citylist;
     }
   }
+  
 };
 </script>
 <style lang="scss" scope>
@@ -175,13 +188,18 @@ export default {
       width: 100%;
       height: 30px;
     }
+    .adddefined{
+      width: 17.5%;
+      font-size: 15px;
+      color: #555555;
+    }
     .defined {
-      width: 23.3%;
+      width: 17.5%;
       font-size: 15px;
       color: #555555;
     }
     .cure {
-      width: 23.3%;
+      width: 17.5%;
       font-size: 15px;
       color: #555555;
     }
@@ -224,7 +242,7 @@ export default {
       }
       .cityother {
         color: #555555;
-        width: 23.3%;
+        width: 17.5%;
       }
     }
     .citylist:last-child {

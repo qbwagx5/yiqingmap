@@ -91,15 +91,14 @@ export default {
           ]
         });
         that.newprovincedata = [];
-      }, 500);
+      }, 1500);
     }
   },
 
   mounted() {
-    this.getdata();
     setInterval(() => {
       this.getdata();
-    }, 60000);
+    }, 5000);
     this.myChart = this.$echarts.init(document.getElementById("main"));
     // 指定图表的配置项和数据
     let option = {
