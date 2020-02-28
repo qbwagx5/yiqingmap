@@ -2,6 +2,7 @@
 {
     "apps":[{
         "name": "yiqing",
+        "script": "npm",
         "env":{
             "COMMON_VARIABLE": true
         },
