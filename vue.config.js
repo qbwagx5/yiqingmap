@@ -1,7 +1,8 @@
 module.exports = {
-
+  publicPath: './',
   devServer: {
     port:8081,
+
     proxy: {
       '/api': {
         target: 'https://interface.sina.cn/wap_api/wap_std_subject',//请求的目标地址的BaseURL
