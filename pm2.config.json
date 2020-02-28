@@ -20,7 +20,7 @@
         "path": "/www/yiqingmap/production",
         "ssh_options": "StrictHostKeyChecking=no",
         "pre-deploy": "git fetch --all",
-        "post-deploy": "npm i && grunt build && pm2 startOrRestart pm2.config.json --env production",
+        "post-deploy": "npm i  && pm2 startOrRestart pm2.config.json --env production",
         "env":{
             "NODE_ENV": "production"
         }
