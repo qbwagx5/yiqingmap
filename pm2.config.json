@@ -1,0 +1,32 @@
+
+{
+    "apps":[{
+        "name": "yiqing",
+        "env":{
+            "COMMON_VARIABLE": true
+        },
+        "env_production":{
+            "NODE_ENV": "production"
+        }
+    }],
+
+  "deploy":{
+    "production":{
+        "user": "liushuhao",
+        "host":["47.100.204.209"],
+        "port":"1995",
+        "ref": "origin/master",
+        "repo": "https://github.com/qbwagx5/yiqingmap.git",
+        "path": "/www/yiqingmap/production",
+        "ssh_options": "StrictHostKeyChecking=no",
+        "pre-deploy": "git fetch --all",
+        "post-deploy": "npm i && grunt build && pm2 startOrRestart pm2.config.json --env production",
+        "env":{
+            "NODE_ENV": "production"
+        }
+
+    }
+
+  }
+
+}
