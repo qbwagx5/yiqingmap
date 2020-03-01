@@ -1,9 +1,9 @@
 
 
 <template>
-  <div class="news">
+  <div class="news" id="news">
     <div class="epidemicnewstitle">
-      <p class="title">疫情动态</p>
+      <p class="title">疫情新闻</p>
     </div>
     <div class="epidemicnewsmain">
       <div v-for="item in newlists" v-bind:key="item.newsId">
@@ -18,7 +18,7 @@
             <span>{{item.date}}</span>
           </div>
           <div class="news-main">
-            <p>{{item.title}}</p>
+            <a :href="item.url" target="_blank"><p>{{item.title}}</p></a>
           </div>
         </div>
       </div>
@@ -58,7 +58,12 @@ export default {
   },
   created() {
     this.getnewsdata();
-  }
+  },
+  mounted() {
+    setInterval(() => {
+      this.getnewsdata()
+    }, 60000);
+  },
 };
 </script>
 
@@ -101,6 +106,9 @@ export default {
         left: 15px;
         background-color: #f5f6f7;
         border-radius: 5px;
+        a{
+          text-decoration:none;
+        }
         p {
           padding-left: 20px;
           line-height: 50px;

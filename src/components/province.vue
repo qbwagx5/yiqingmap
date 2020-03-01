@@ -95,7 +95,7 @@ export default {
       this.citylist = this.$store.state.epidemicdata.list;
       setTimeout(() => {
         this.getdatas()
-      }, 4000);
+      }, 100);
     setInterval(() => {
       this.updates();
     }, 6000);
