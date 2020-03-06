@@ -61,8 +61,13 @@
           <chinamap></chinamap>
           <province></province>
           <news ></news>
+
+       
         </div>
       </main>
+         <div class="record">
+            <a href="http://www.beian.miit.gov.cn">鲁ICP备19012507号</a>
+          </div>
   </div>
 </template>
 <script>
@@ -98,6 +103,15 @@ export default {
 
   created() {
     this.getdatas();
+    let s= this.test()
+    console.log(s.next());
+     let r1=s.next();
+     console.log(s.next());
+      
+
+
+     
+
   },
 
   mounted() {
@@ -111,7 +125,17 @@ export default {
 
     // console.log(this.newheight);
   },
-  methods: {
+  methods: {  
+
+    *test(){
+      let url = "https://interface.sina.cn/news/wap/fymap2020_data.d.json";
+      let that = this;
+      let result= yield $.ajax({
+        type: "get",
+        url: url,
+        dataType: "jsonp",
+      });
+    },
     returntop() {
       window.scrollTo(0, 0);
     },
@@ -168,10 +192,25 @@ export default {
 </script>
 
 <style lang="scss">
+  .record{
+    display: flex;
+    padding-top: 20px;
+    width: 100%;
+    height: 20px;
+    border-top: 1px solid #ffffff;
+    font-size: 10px;
+    text-align: center;
+    a{
+      text-decoration: none;
+      color: #000;
+
+    }
+  }
 .home {
   width: 764px;
   margin: 0 auto;
   position: relative;
+
   header {
     height: 187px;
     margin: 0 auto;
